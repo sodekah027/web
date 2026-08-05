@@ -3,293 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#05070f">
     <title>Free VPN Server</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            color-scheme: dark;
+            --ink: #ffffff;
+            --ink2: rgba(255, 255, 255, 0.62);
+            --ink3: rgba(255, 255, 255, 0.4);
+            --glass: rgba(255, 255, 255, 0.045);
+            --glass-bd: rgba(255, 255, 255, 0.14);
+            --green: #a7f3c0;
+            --blue: #6ec1ff;
+            --wall: url("https://images.unsplash.com/photo-1771098524443-a8384b118ca5?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             min-height: 100vh;
-            color: #e0e0e0;
+            color: var(--ink);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, Roboto, "Segoe UI", sans-serif;
+            background-image:
+                linear-gradient(180deg, rgba(5, 7, 15, 0.2) 0%, rgba(5, 7, 15, 0.3) 45%, rgba(5, 7, 15, 0.72) 100%),
+                var(--wall);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
-        .hero {
-            text-align: center;
-            padding: 40px 20px 10px;
+
+        .glass {
+            background: var(--glass);
+            border: 1px solid var(--glass-bd);
+            backdrop-filter: blur(18px) saturate(180%);
+            -webkit-backdrop-filter: blur(18px) saturate(180%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 20px 50px rgba(0, 0, 0, 0.35);
+        }
+
+        .lock {
             position: relative;
+            min-height: 100svh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px 120px;
         }
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(ellipse at center, rgba(99,102,241,0.15) 0%, transparent 70%);
-            pointer-events: none;
+
+        .lock-date {
+            font-weight: 600;
+            font-size: clamp(1.15rem, 2.4vw, 1.55rem);
+            letter-spacing: 0.01em;
+            text-shadow: 0 3px 20px rgba(0, 0, 0, 0.45);
         }
-        .shield { font-size: 56px; margin-bottom: 8px; filter: drop-shadow(0 0 20px rgba(99,102,241,0.5)); }
-        h1 {
-            font-size: 2rem;
-            background: linear-gradient(90deg, #a78bfa, #60a5fa, #34d399);
+
+        .clock {
+            margin-top: 6px;
+            font-size: clamp(6rem, 24vw, 15rem);
+            font-weight: 300;
+            letter-spacing: -0.06em;
+            line-height: 0.98;
+            text-indent: -0.03em;
+            background-image:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.06) 100%),
+                var(--wall);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 6px;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            filter: drop-shadow(0 10px 34px rgba(0, 0, 0, 0.5));
         }
-        .subtitle { color: #94a3b8; font-size: 0.95rem; margin-bottom: 10px; }
-        .status-bar {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3);
-            border-radius: 20px; padding: 6px 16px; font-size: 0.85rem; color: #4ade80;
+
+        .lock-status {
+            margin-top: 22px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            color: var(--ink);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
         }
-        .status-dot {
-            width: 8px; height: 8px; background: #4ade80; border-radius: 50%;
-            animation: pulse 2s infinite;
+
+        .lock-status .pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 12px var(--green);
+            animation: pulse 2s ease-in-out infinite;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(74,222,128,0.7); }
-            50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(74,222,128,0); }
+
+        @keyframes pulse { 50% { opacity: 0.4; transform: scale(0.7); } }
+
+        .lock-actions {
+            position: absolute;
+            left: 50%;
+            bottom: max(30px, env(safe-area-inset-bottom));
+            transform: translateX(-50%);
+            display: flex;
+            gap: 16px;
         }
-        .container { max-width: 800px; margin: 0 auto; padding: 16px 20px; }
+
+        .glass-btn {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 1.45rem;
+            color: #fff;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.09);
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 14px 32px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .glass-btn:hover { transform: scale(1.1); }
+
+        .content {
+            max-width: 1080px;
+            margin: 0 auto 40px;
+            padding: 28px;
+            border-radius: 30px;
+            scroll-margin-top: 20px;
+        }
+
+        .content-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .content-title { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
+        .content-sub { margin-top: 4px; color: var(--ink2); font-size: 0.8rem; }
+
+        .order-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 12px 20px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.86rem;
+            text-decoration: none;
+            box-shadow: 0 12px 28px rgba(37, 211, 102, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .order-btn:hover { transform: translateY(-2px); }
 
         .info-row {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
         }
-        .info-card {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px; padding: 14px; text-align: center;
+
+        .info-card { padding: 16px 12px; border-radius: 18px; text-align: center; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .info-card .lbl { color: var(--ink3); font-size: 0.62rem; font-weight: 650; letter-spacing: 0.1em; text-transform: uppercase; }
+        .info-card .val { margin-top: 6px; font-size: 0.95rem; font-weight: 700; }
+        .val.green { color: var(--green); }
+        .val.blue { color: var(--blue); }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 16px;
         }
-        .info-card .lbl { font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
-        .info-card .val { font-size: 1rem; font-weight: 700; }
-        .info-card .val.green { color: #4ade80; }
-        .info-card .val.yellow { color: #facc15; }
-        .info-card .val.blue { color: #60a5fa; }
 
         .config-card {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 14px; padding: 18px; margin-bottom: 14px; transition: all 0.3s;
-        }
-        .config-card:hover { border-color: rgba(99,102,241,0.3); box-shadow: 0 4px 20px rgba(99,102,241,0.1); }
-
-        .config-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-        .badge {
-            padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-        }
-        .badge-trojan { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
-        .badge-vmess { background: rgba(59,130,246,0.2); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
-        .badge-vless { background: rgba(168,85,247,0.2); color: #c084fc; border: 1px solid rgba(168,85,247,0.3); }
-
-
-        .config-details { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px; }
-        .detail-item { background: rgba(0,0,0,0.2); border-radius: 8px; padding: 8px 10px; }
-        .detail-item .dl { font-size: 0.65rem; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; }
-        .detail-item .dv { font-size: 0.82rem; color: #cbd5e1; font-family: 'SF Mono', monospace; word-break: break-all; }
-
-        .config-link-box {
-            background: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.12);
-            border-radius: 8px; padding: 10px; margin-bottom: 12px;
-        }
-        .config-link-box .cll { font-size: 0.65rem; color: #475569; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-        .config-link-box .clv {
-            font-size: 0.72rem; color: #64748b; font-family: 'SF Mono', monospace;
-            word-break: break-all; line-height: 1.4;
-            max-height: 42px; overflow: hidden;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            border-radius: 22px;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .config-header { display: flex; align-items: center; gap: 9px; }
+        .badge { padding: 5px 9px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 9px; font-size: 0.66rem; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; }
+        .badge-trojan { background: rgba(255, 128, 151, 0.18); color: #ffd0d9; }
+        .badge-vmess { background: rgba(102, 184, 255, 0.18); color: #c5e5ff; }
+        .badge-vless { background: rgba(203, 145, 255, 0.18); color: #ecd5ff; }
+        .config-header .proto { margin-left: auto; color: var(--ink3); font-size: 0.72rem; }
+
+        .config-details { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+        .detail-item { padding: 8px 10px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.07); }
+        .dl { color: var(--ink3); font-size: 0.6rem; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; }
+        .dv { margin-top: 3px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.74rem; color: rgba(255, 255, 255, 0.85); word-break: break-all; }
+
+        .config-link-box { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.03); border: 1px dashed rgba(255, 255, 255, 0.18); }
+        .cll { color: var(--ink3); font-size: 0.6rem; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; }
+        .clv {
+            max-height: 43px;
+            overflow: hidden;
+            margin-top: 4px;
+            font-family: ui-monospace, "SF Mono", Menlo, monospace;
+            font-size: 0.66rem;
+            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.58);
+            word-break: break-all;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .btn-row { margin-top: 11px; }
         .btn {
-            padding: 9px 16px; border-radius: 8px; border: none; font-size: 0.82rem; font-weight: 600;
-            cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 5px;
-        }
-        .btn-copy { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; }
-        .btn-copy:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(99,102,241,0.4); }
-        .btn-copy.copied { background: linear-gradient(135deg, #22c55e, #16a34a); }
-
-
-
-
-
-        .btn-wa {
-            display: inline-flex; align-items: center; gap: 10px;
-            padding: 16px 32px; border-radius: 16px; font-weight: 700;
-            background: linear-gradient(135deg, #25d366, #128c7e, #075e54);
-            background-size: 200% 200%;
-            color: white; text-decoration: none; font-size: 1rem;
-            transition: all 0.3s; position: relative; overflow: hidden;
-            box-shadow: 0 4px 20px rgba(37,211,102,0.4), 0 0 40px rgba(37,211,102,0.15);
-            animation: waGlow 2s ease-in-out infinite, waShimmer 3s ease-in-out infinite;
-        }
-        .btn-wa:hover {
-            transform: translateY(-3px) scale(1.03);
-            box-shadow: 0 8px 30px rgba(37,211,102,0.6), 0 0 60px rgba(37,211,102,0.3);
-        }
-        .btn-wa::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
-            animation: waShine 3s linear infinite;
-        }
-        .btn-wa-icon { font-size: 1.8rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
-        .btn-wa-text { text-align: left; line-height: 1.3; }
-        .btn-wa-arrow {
-            font-size: 1.4rem; transition: transform 0.3s;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-        }
-        .btn-wa:hover .btn-wa-arrow { transform: translateX(4px); }
-        @keyframes waGlow {
-            0%, 100% { box-shadow: 0 4px 20px rgba(37,211,102,0.4), 0 0 40px rgba(37,211,102,0.15); }
-            50% { box-shadow: 0 4px 30px rgba(37,211,102,0.6), 0 0 60px rgba(37,211,102,0.3); }
-        }
-        @keyframes waShimmer {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        @keyframes waShine {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.07);
+            color: var(--ink);
+            font-size: 0.76rem;
+            font-weight: 650;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
         }
 
-        .footer { text-align: center; padding: 28px 20px; color: #475569; font-size: 0.75rem; }
+        .btn:hover { transform: translateY(-1px); background: rgba(255, 255, 255, 0.14); }
+        .btn-copy.copied { border-color: rgba(167, 243, 192, 0.4); color: var(--green); background: rgba(24, 118, 74, 0.3); }
 
+        .footer { margin-top: 20px; text-align: center; color: var(--ink3); font-size: 0.7rem; line-height: 1.8; }
 
+        @media (max-width: 860px) {
+            .config-grid, .info-row { grid-template-columns: 1fr; }
+            .content { padding: 20px; border-radius: 24px; }
+        }
 
-        @media (max-width: 600px) {
-            h1 { font-size: 1.5rem; }
-            .info-row { grid-template-columns: 1fr; }
-            .config-details { grid-template-columns: 1fr; }
-            .btn-row { flex-direction: column; }
-            .btn { justify-content: center; }
+        @media (max-width: 520px) {
+            .clock { font-size: clamp(5.2rem, 26vw, 9rem); }
+            .lock-actions { bottom: 24px; }
+            .glass-btn { width: 56px; height: 56px; font-size: 1.3rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+            html { scroll-behavior: auto; }
         }
     </style>
 </head>
 <body>
-    <div class="hero">
-        <div class="shield">🛡️</div>
-        <h1>Free VPN Server</h1>
-        <p class="subtitle">Akses internet gratis & aman tanpa batas</p>
-        <div class="status-bar">
-            <span class="status-dot"></span>
-            Server Aktif &bull; Unlimited &bull; Masa Aktif Selamanya
-        </div>
-    </div>
+    <main>
+        <section class="lock">
+            <div class="lock-date" id="lockDate">Kamis, 6 Agustus</div>
+            <div class="clock" id="clock">10:35</div>
+            <div class="lock-status glass"><span class="pulse"></span>Free VPN Server &bull; Server Aktif</div>
+            <div class="lock-actions">
+                <a href="#config" class="glass-btn" aria-label="Lihat Config">🔒</a>
+                <a href="https://wa.me/6283851354422" target="_blank" rel="noopener noreferrer" class="glass-btn" aria-label="Order via WhatsApp">💬</a>
+            </div>
+        </section>
 
-    <div class="container">
-        <div class="info-row">
-            <div class="info-card">
-                <div class="lbl">Server</div>
-                <div class="val blue">3 Protocol</div>
+        <section class="content glass" id="config">
+            <div class="content-head">
+                <div>
+                    <div class="content-title">Pilih Protocol &amp; Config</div>
+                    <div class="content-sub">Unlimited Bandwidth &bull; Masa Aktif Selamanya</div>
+                </div>
+                <a href="https://wa.me/6283851354422" target="_blank" rel="noopener noreferrer" class="order-btn">💬 Order VPN via WhatsApp</a>
             </div>
-            <div class="info-card">
-                <div class="lbl">Bandwidth</div>
-                <div class="val green">Unlimited</div>
+
+            <div class="info-row">
+                <div class="info-card"><div class="lbl">Server</div><div class="val blue">3 Protocol</div></div>
+                <div class="info-card"><div class="lbl">Bandwidth</div><div class="val green">Unlimited</div></div>
+                <div class="info-card"><div class="lbl">Masa Aktif</div><div class="val green">Selamanya</div></div>
             </div>
-                <div class="info-card">
-                    <div class="lbl">Masa Aktif</div>
-                    <div class="val green">Selamanya</div>
+
+            <div class="config-grid">
+                <div class="config-card">
+                    <div class="config-header"><span class="badge badge-trojan">Trojan</span><span class="proto">WebSocket + TLS</span></div>
+                    <div class="config-details">
+                        <div class="detail-item"><div class="dl">Server</div><div class="dv">dewa.renaisand.my.id</div></div>
+                        <div class="detail-item"><div class="dl">Port</div><div class="dv">443</div></div>
+                        <div class="detail-item"><div class="dl">Network</div><div class="dv">WebSocket</div></div>
+                        <div class="detail-item"><div class="dl">SNI</div><div class="dv">dewa.renaisand.my.id</div></div>
+                    </div>
+                    <div class="config-link-box"><div class="cll">Config Link</div><div class="clv">trojan://sdnO9RtmczqJVx1uilYyLA@dewa.renaisand.my.id:443?security=tls&amp;type=ws&amp;headerType=&amp;path=%2Ftrojan&amp;host=dewa.renaisand.my.id&amp;sni=dewa.renaisand.my.id&amp;fp=ios</div></div>
+                    <div class="btn-row"><button class="btn btn-copy" onclick="copyCfg(0, this)">📋 Copy Config</button></div>
+                </div>
+
+                <div class="config-card">
+                    <div class="config-header"><span class="badge badge-vmess">VMess</span><span class="proto">WebSocket + TLS</span></div>
+                    <div class="config-details">
+                        <div class="detail-item"><div class="dl">Server</div><div class="dv">dewa.renaisand.my.id</div></div>
+                        <div class="detail-item"><div class="dl">Port</div><div class="dv">443</div></div>
+                        <div class="detail-item"><div class="dl">Network</div><div class="dv">WebSocket</div></div>
+                        <div class="detail-item"><div class="dl">UUID</div><div class="dv">ccbfa882-fd9b-4fdb-bb19-cffc0324ab9e</div></div>
+                    </div>
+                    <div class="config-link-box"><div class="cll">Config Link</div><div class="clv">vmess://eyJhZGQiOiAiZGV3YS5yZW5haXNhbmQubXkuaWQiLCAiYWlkIjogIjAiLCAiZnAiOiAiaW9zIiwgImhvc3QiOiAiZGV3YS5yZW5haXNhbmQubXkuaWQiLCAiaWQiOiAiY2NiZmE4ODItZmQ5Yi00ZmRiLWJiMTktY2ZmYzAzMjRhYjllIiwgIm5ldCI6ICJ3cyIsICJwYXRoIjogIi92bWVzcyIsICJwb3J0IjogNDQzLCAicHMiOiAiKGdyYXRpc2FuKSBbVk1lc3MgLSB3c10gVExTIFx1MjcwNSIsICJzY3kiOiAiYXV0byIsICJzbmkiOiAiZGV3YS5yZW5haXNhbmQubXkuaWQiLCAidGxzIjogInRscyIsICJ0eXBlIjogIiIsICJ2IjogIjIifQ==</div></div>
+                    <div class="btn-row"><button class="btn btn-copy" onclick="copyCfg(1, this)">📋 Copy Config</button></div>
+                </div>
+
+                <div class="config-card">
+                    <div class="config-header"><span class="badge badge-vless">VLESS</span><span class="proto">WebSocket + TLS</span></div>
+                    <div class="config-details">
+                        <div class="detail-item"><div class="dl">Server</div><div class="dv">dewa.renaisand.my.id</div></div>
+                        <div class="detail-item"><div class="dl">Port</div><div class="dv">443</div></div>
+                        <div class="detail-item"><div class="dl">Network</div><div class="dv">WebSocket</div></div>
+                        <div class="detail-item"><div class="dl">UUID</div><div class="dv">4b6e757d-841d-464b-a82a-cb5525264715</div></div>
+                    </div>
+                    <div class="config-link-box"><div class="cll">Config Link</div><div class="clv">vless://4b6e757d-841d-464b-a82a-cb5525264715@dewa.renaisand.my.id:443?security=tls&amp;type=ws&amp;path=%2Fvless&amp;host=dewa.renaisand.my.id&amp;sni=dewa.renaisand.my.id&amp;fp=ios</div></div>
+                    <div class="btn-row"><button class="btn btn-copy" onclick="copyCfg(2, this)">📋 Copy Config</button></div>
                 </div>
             </div>
-            <div style="text-align:center; margin:20px 0;">
-                <a href="https://wa.me/6283851354422" target="_blank" class="btn-wa">
-                    <span class="btn-wa-icon">💬</span>
-                    <span class="btn-wa-text">
-                        <span style="font-size:0.75rem; opacity:0.85; display:block;">Pesan Sekarang</span>
-                        Order VPN via WhatsApp
-                    </span>
-                    <span class="btn-wa-arrow">→</span>
-                </a>
-                <p style="color:#64748b; font-size:0.75rem; margin-top:8px;">Fast response &bull; Harga terjangkau &bull; Support 24/7</p>
-            </div>
 
-        <!-- Trojan -->
-        <div class="config-card">
-            <div class="config-header">
-                <span class="badge badge-trojan">Trojan</span>
-
-                <span style="color:#64748b; font-size:0.8rem;">WebSocket + TLS</span>
-            </div>
-            <div class="config-details">
-                <div class="detail-item"><div class="dl">Server</div><div class="dv">dewa.renaisand.my.id</div></div>
-                <div class="detail-item"><div class="dl">Port</div><div class="dv">443</div></div>
-                <div class="detail-item"><div class="dl">Network</div><div class="dv">WebSocket</div></div>
-                <div class="detail-item"><div class="dl">SNI</div><div class="dv">dewa.renaisand.my.id</div></div>
-            </div>
-            <div class="config-link-box">
-                <div class="cll">Config Link</div>
-                <div class="clv">trojan://xf9kkqXXtKfQGCTvT-vrVA@dewa.renaisand.my.id:443?security=tls&type=ws&path=%2Ftrojan&host=dewa.renaisand.my.id&sni=dewa.renaisand.my.id&fp=ios</div>
-            </div>
-            <div class="btn-row">
-                <button class="btn btn-copy" onclick="copyCfg(0, this)">📋 Copy Config</button>
-            </div>
-        </div>
-
-        <!-- VMess -->
-        <div class="config-card">
-            <div class="config-header">
-                <span class="badge badge-vmess">VMess</span>
-
-                <span style="color:#64748b; font-size:0.8rem;">WebSocket + TLS</span>
-            </div>
-            <div class="config-details">
-                <div class="detail-item"><div class="dl">Server</div><div class="dv">dewa.renaisand.my.id</div></div>
-                <div class="detail-item"><div class="dl">Port</div><div class="dv">443</div></div>
-                <div class="detail-item"><div class="dl">Network</div><div class="dv">WebSocket</div></div>
-                <div class="detail-item"><div class="dl">UUID</div><div class="dv">fa52009c-d9ac-4115-9690-6443efbdd357</div></div>
-            </div>
-            <div class="config-link-box">
-                <div class="cll">Config Link</div>
-                <div class="clv">vmess://eyJhZGQiOiAiZGV3YS5yZW5haXNhbmQubXkuaWQiLCAiYWlkIjogIjAiLCAiZnAiOiAiaW9zIiwgImhvc3QiOiAiZGV3YS5yZW5haXNhbmQubXkuaWQiLCAiaWQiOiAiZmE1MjAwOWMtZDlhYy00MTE1LTk2OTAtNjQ0M2VmYmRkMzU3IiwgIm5ldCI6ICJ3cyIsICJwYXRoIjogIi92bWVzcyIsICJwb3J0IjogNDQzLCAicHMiOiAiKGdyYXRpc2FuKSBbVk1lc3MgLSB3c10gVExTIFx1MjcwNSIsICJzY3kiOiAiYXV0byIsICJzbmkiOiAiZGV3YS5yZW5haXNhbmQubXkuaWQiLCAidGxzIjogInRscyIsICJ0eXBlIjogIiIsICJ2IjogIjIifQ==</div>
-            </div>
-            <div class="btn-row">
-                <button class="btn btn-copy" onclick="copyCfg(1, this)">📋 Copy Config</button>
-            </div>
-        </div>
-
-        <!-- VLESS -->
-        <div class="config-card">
-            <div class="config-header">
-                <span class="badge badge-vless">VLESS</span>
-
-                <span style="color:#64748b; font-size:0.8rem;">WebSocket + TLS</span>
-            </div>
-            <div class="config-details">
-                <div class="detail-item"><div class="dl">Server</div><div class="dv">dewa.renaisand.my.id</div></div>
-                <div class="detail-item"><div class="dl">Port</div><div class="dv">443</div></div>
-                <div class="detail-item"><div class="dl">Network</div><div class="dv">WebSocket</div></div>
-                <div class="detail-item"><div class="dl">UUID</div><div class="dv">2a95a35e-3c35-4e91-b5ad-5361500eb590</div></div>
-            </div>
-            <div class="config-link-box">
-                <div class="cll">Config Link</div>
-                <div class="clv">vless://2a95a35e-3c35-4e91-b5ad-5361500eb590@dewa.renaisand.my.id:443?security=tls&type=ws&path=%2Fvless&host=dewa.renaisand.my.id&sni=dewa.renaisand.my.id&fp=ios</div>
-            </div>
-            <div class="btn-row">
-                <button class="btn btn-copy" onclick="copyCfg(2, this)">📋 Copy Config</button>
-            </div>
-        </div>
-
-
-
-
-
-        <div class="footer">
-            Free VPN Server &bull; Unlimited Bandwidth &bull; Masa Aktif Selamanya<br>
-            Powered by Marzban Panel
-        </div>
-    </div>
-
-
+            <div class="footer">Free VPN Server &bull; Unlimited Bandwidth &bull; Masa Aktif Selamanya<br>Powered by Marzban Panel</div>
+        </section>
+    </main>
 
     <script>
         const C = [
-            "trojan://xf9kkqXXtKfQGCTvT-vrVA@dewa.renaisand.my.id:443?security=tls&type=ws&headerType=&path=%2Ftrojan&host=dewa.renaisand.my.id&sni=dewa.renaisand.my.id&fp=ios#(gratisan)%20%5BTrojan%20-%20ws%5D%20TLS%20%E2%9C%85",
-            "vmess://eyJhZGQiOiAiZGV3YS5yZW5haXNhbmQubXkuaWQiLCAiYWlkIjogIjAiLCAiZnAiOiAiaW9zIiwgImhvc3QiOiAiZGV3YS5yZW5haXNhbmQubXkuaWQiLCAiaWQiOiAiZmE1MjAwOWMtZDlhYy00MTE1LTk2OTAtNjQ0M2VmYmRkMzU3IiwgIm5ldCI6ICJ3cyIsICJwYXRoIjogIi92bWVzcyIsICJwb3J0IjogNDQzLCAicHMiOiAiKGdyYXRpc2FuKSBbVk1lc3MgLSB3c10gVExTIFx1MjcwNSIsICJzY3kiOiAiYXV0byIsICJzbmkiOiAiZGV3YS5yZW5haXNhbmQubXkuaWQiLCAidGxzIjogInRscyIsICJ0eXBlIjogIiIsICJ2IjogIjIifQ==",
-            "vless://2a95a35e-3c35-4e91-b5ad-5361500eb590@dewa.renaisand.my.id:443?security=tls&type=ws&headerType=&path=%2Fvless&host=dewa.renaisand.my.id&sni=dewa.renaisand.my.id&fp=ios#(gratisan)%20%5BVLESS%20-%20ws%5D%20TLS%20%E2%9C%85"
+            "trojan://sdnO9RtmczqJVx1uilYyLA@dewa.renaisand.my.id:443?security=tls&type=ws&headerType=&path=%2Ftrojan&host=dewa.renaisand.my.id&sni=dewa.renaisand.my.id&fp=ios#(gratisan)%20%5BTrojan%20-%20ws%5D%20TLS%20%E2%9C%85",
+            "vmess://eyJhZGQiOiAiZGV3YS5yZW5haXNhbmQubXkuaWQiLCAiYWlkIjogIjAiLCAiZnAiOiAiaW9zIiwgImhvc3QiOiAiZGV3YS5yZW5haXNhbmQubXkuaWQiLCAiaWQiOiAiY2NiZmE4ODItZmQ5Yi00ZmRiLWJiMTktY2ZmYzAzMjRhYjllIiwgIm5ldCI6ICJ3cyIsICJwYXRoIjogIi92bWVzcyIsICJwb3J0IjogNDQzLCAicHMiOiAiKGdyYXRpc2FuKSBbVk1lc3MgLSB3c10gVExTIFx1MjcwNSIsICJzY3kiOiAiYXV0byIsICJzbmkiOiAiZGV3YS5yZW5haXNhbmQubXkuaWQiLCAidGxzIjogInRscyIsICJ0eXBlIjogIiIsICJ2IjogIjIifQ==",
+            "vless://4b6e757d-841d-464b-a82a-cb5525264715@dewa.renaisand.my.id:443?security=tls&type=ws&headerType=&path=%2Fvless&host=dewa.renaisand.my.id&sni=dewa.renaisand.my.id&fp=ios#(gratisan)%20%5BVLESS%20-%20ws%5D%20TLS%20%E2%9C%85"
         ];
 
+        function pad(n) { return String(n).padStart(2, '0'); }
+
+        function tick() {
+            const now = new Date();
+            document.getElementById('clock').textContent = pad(now.getHours()) + ':' + pad(now.getMinutes());
+            document.getElementById('lockDate').textContent = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
+        }
+
         function copyCfg(i, btn) {
-            navigator.clipboard.writeText(C[i]).then(() => {
-                btn.classList.add('copied'); btn.innerHTML = '✅ Tersalin!';
-                setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = '📋 Copy Config'; }, 2000);
+            navigator.clipboard.writeText(C[i]).then(function () {
+                btn.classList.add('copied');
+                btn.textContent = '✓ Tersalin!';
+                setTimeout(function () {
+                    btn.classList.remove('copied');
+                    btn.textContent = '📋 Copy Config';
+                }, 2000);
             });
         }
 
+        tick();
+        setInterval(tick, 1000);
     </script>
 </body>
 </html>
