@@ -6,260 +6,7 @@
     <meta name="theme-color" content="#05070f">
     <title>Free VPN Server</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
-    <style>
-        :root {
-            color-scheme: dark;
-            --ink: #ffffff;
-            --ink2: rgba(255, 255, 255, 0.62);
-            --ink3: rgba(255, 255, 255, 0.4);
-            --glass: rgba(255, 255, 255, 0.045);
-            --glass-bd: rgba(255, 255, 255, 0.14);
-            --green: #a7f3c0;
-            --blue: #6ec1ff;
-            --wall: url("https://images.unsplash.com/photo-1771098524443-a8384b118ca5?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        html { scroll-behavior: smooth; }
-
-        body {
-            min-height: 100vh;
-            color: var(--ink);
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, Roboto, "Segoe UI", sans-serif;
-            background-image:
-                linear-gradient(180deg, rgba(5, 7, 15, 0.2) 0%, rgba(5, 7, 15, 0.3) 45%, rgba(5, 7, 15, 0.72) 100%),
-                var(--wall);
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-
-        .glass {
-            background: var(--glass);
-            border: 1px solid var(--glass-bd);
-            backdrop-filter: blur(18px) saturate(180%);
-            -webkit-backdrop-filter: blur(18px) saturate(180%);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 20px 50px rgba(0, 0, 0, 0.35);
-        }
-
-        .lock {
-            position: relative;
-            min-height: 100svh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 40px 20px 120px;
-        }
-
-        .lock-date {
-            font-weight: 600;
-            font-size: clamp(1.15rem, 2.4vw, 1.55rem);
-            letter-spacing: 0.01em;
-            text-shadow: 0 3px 20px rgba(0, 0, 0, 0.45);
-        }
-
-        .clock {
-            margin-top: 6px;
-            font-size: clamp(6rem, 24vw, 15rem);
-            font-weight: 300;
-            letter-spacing: -0.06em;
-            line-height: 0.98;
-            text-indent: -0.03em;
-            background-image:
-                linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.06) 100%),
-                var(--wall);
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            color: transparent;
-            filter: drop-shadow(0 10px 34px rgba(0, 0, 0, 0.5));
-        }
-
-        .lock-status {
-            margin-top: 22px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 18px;
-            border-radius: 999px;
-            color: var(--ink);
-            font-size: 0.78rem;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-        }
-
-        .lock-status .pulse {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--green);
-            box-shadow: 0 0 12px var(--green);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse { 50% { opacity: 0.4; transform: scale(0.7); } }
-
-        .lock-actions {
-            position: absolute;
-            left: 50%;
-            bottom: max(30px, env(safe-area-inset-bottom));
-            transform: translateX(-50%);
-            display: flex;
-            gap: 16px;
-        }
-
-        .glass-btn {
-            width: 62px;
-            height: 62px;
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-            font-size: 1.45rem;
-            color: #fff;
-            text-decoration: none;
-            background: rgba(255, 255, 255, 0.09);
-            border: 1px solid rgba(255, 255, 255, 0.24);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 14px 32px rgba(0, 0, 0, 0.4);
-            transition: transform 0.2s;
-        }
-
-        .glass-btn:hover { transform: scale(1.1); }
-
-        .content {
-            max-width: 1080px;
-            margin: 0 auto 40px;
-            padding: 28px;
-            border-radius: 30px;
-            scroll-margin-top: 20px;
-        }
-
-        .content-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
-
-        .content-title { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
-        .content-sub { margin-top: 4px; color: var(--ink2); font-size: 0.8rem; }
-
-        .order-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 9px;
-            padding: 12px 20px;
-            border-radius: 15px;
-            background: linear-gradient(135deg, #25d366, #128c7e);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #fff;
-            font-weight: 700;
-            font-size: 0.86rem;
-            text-decoration: none;
-            box-shadow: 0 12px 28px rgba(37, 211, 102, 0.3);
-            transition: transform 0.2s;
-        }
-
-        .order-btn:hover { transform: translateY(-2px); }
-
-        .info-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .info-card { padding: 16px 12px; border-radius: 18px; text-align: center; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .info-card .lbl { color: var(--ink3); font-size: 0.62rem; font-weight: 650; letter-spacing: 0.1em; text-transform: uppercase; }
-        .info-card .val { margin-top: 6px; font-size: 0.95rem; font-weight: 700; }
-        .val.green { color: var(--green); }
-        .val.blue { color: var(--blue); }
-
-        .config-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-            margin-top: 16px;
-        }
-
-        .config-card {
-            border-radius: 22px;
-            padding: 18px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .config-header { display: flex; align-items: center; gap: 9px; }
-        .badge { padding: 5px 9px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 9px; font-size: 0.66rem; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; }
-        .badge-trojan { background: rgba(255, 128, 151, 0.18); color: #ffd0d9; }
-        .badge-vmess { background: rgba(102, 184, 255, 0.18); color: #c5e5ff; }
-        .badge-vless { background: rgba(203, 145, 255, 0.18); color: #ecd5ff; }
-        .config-header .proto { margin-left: auto; color: var(--ink3); font-size: 0.72rem; }
-
-        .config-details { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
-        .detail-item { padding: 8px 10px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.07); }
-        .dl { color: var(--ink3); font-size: 0.6rem; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; }
-        .dv { margin-top: 3px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.74rem; color: rgba(255, 255, 255, 0.85); word-break: break-all; }
-
-        .config-link-box { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.03); border: 1px dashed rgba(255, 255, 255, 0.18); }
-        .cll { color: var(--ink3); font-size: 0.6rem; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; }
-        .clv {
-            max-height: 43px;
-            overflow: hidden;
-            margin-top: 4px;
-            font-family: ui-monospace, "SF Mono", Menlo, monospace;
-            font-size: 0.66rem;
-            line-height: 1.4;
-            color: rgba(255, 255, 255, 0.58);
-            word-break: break-all;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-
-        .btn-row { margin-top: 11px; }
-        .btn {
-            width: 100%;
-            padding: 10px 14px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.07);
-            color: var(--ink);
-            font-size: 0.76rem;
-            font-weight: 650;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
-        }
-
-        .btn:hover { transform: translateY(-1px); background: rgba(255, 255, 255, 0.14); }
-        .btn-copy.copied { border-color: rgba(167, 243, 192, 0.4); color: var(--green); background: rgba(24, 118, 74, 0.3); }
-
-        .footer { margin-top: 20px; text-align: center; color: var(--ink3); font-size: 0.7rem; line-height: 1.8; }
-
-        @media (max-width: 860px) {
-            .config-grid, .info-row { grid-template-columns: 1fr; }
-            .content { padding: 20px; border-radius: 24px; }
-        }
-
-        @media (max-width: 520px) {
-            .clock { font-size: clamp(5.2rem, 26vw, 9rem); }
-            .lock-actions { bottom: 24px; }
-            .glass-btn { width: 56px; height: 56px; font-size: 1.3rem; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-            html { scroll-behavior: auto; }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <main>
@@ -269,6 +16,30 @@
             <div class="lock-status glass"><span class="pulse"></span>Free VPN Server &bull; Server Aktif</div>
             <div class="lock-actions">
                 <a href="#config" class="glass-btn" aria-label="Lihat Config">🔒</a>
+                <a href="https://uptime.renaisand.my.id" target="_blank" rel="noopener noreferrer" class="glass-btn" aria-label="Status Server">
+                    <svg viewBox="0 0 24 24" fill="#5CDD8B" role="img" aria-hidden="true"><path d="M11.759.955c-4.071 0-7.93 2.265-10.06 5.774l-.16.263-.116.284c-1.81 4.44-2.188 9.118.621 12.459 2.67 3.174 6.221 3.328 9.477 3.308 3.256-.02 6.323-.482 8.995-2.032C22.75 19.714 24 16.917 24 14.53c0-2.388-.724-4.698-1.882-7.343l-.112-.257-.148-.238C19.683 3.2 15.83.955 11.758.955Zm0 3.868c2.919 0 5.19 1.305 6.816 3.914 2.076 4.747 2.076 7.724 0 8.929-3.116 1.808-11.234 2.359-13.57-.42-1.558-1.853-1.558-4.69 0-8.51 1.584-2.608 3.835-3.913 6.754-3.913z"/></svg>
+                </a>
+                <a href="https://wifiman.com/speedtest/" target="_blank" rel="noopener noreferrer" class="glass-btn" aria-label="Speedtest WiFiman">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="wfg" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0" stop-color="#18a0fb"/>
+                                <stop offset="1" stop-color="#0064d8"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="24" height="24" rx="6" fill="url(#wfg)"/>
+                        <g fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4.5 9.6c4.3-3.5 10.7-3.5 15 0"/>
+                            <path d="M7 12.6c2.9-2.3 7.1-2.3 10 0"/>
+                            <path d="M9.6 15.2c1.6-1.2 3.2-1.2 4.8 0"/>
+                        </g>
+                        <circle cx="12" cy="18.4" r="1.4" fill="#fff"/>
+                    </svg>
+                </a>
+                <button id="musicBtn" class="glass-btn music" aria-label="Putar Musik">
+                    <span class="music-ic">🎵</span>
+                    <span class="eq" aria-hidden="true"><span></span><span></span><span></span></span>
+                </button>
                 <a href="https://wa.me/6283851354422" target="_blank" rel="noopener noreferrer" class="glass-btn" aria-label="Order via WhatsApp">💬</a>
             </div>
         </section>
@@ -330,34 +101,8 @@
         </section>
     </main>
 
-    <script>
-        const C = [
-            "trojan://sdnO9RtmczqJVx1uilYyLA@dewa.renaisand.my.id:443?security=tls&type=ws&headerType=&path=%2Ftrojan&host=dewa.renaisand.my.id&sni=dewa.renaisand.my.id&fp=ios#(gratisan)%20%5BTrojan%20-%20ws%5D%20TLS%20%E2%9C%85",
-            "vmess://eyJhZGQiOiAiZGV3YS5yZW5haXNhbmQubXkuaWQiLCAiYWlkIjogIjAiLCAiZnAiOiAiaW9zIiwgImhvc3QiOiAiZGV3YS5yZW5haXNhbmQubXkuaWQiLCAiaWQiOiAiY2NiZmE4ODItZmQ5Yi00ZmRiLWJiMTktY2ZmYzAzMjRhYjllIiwgIm5ldCI6ICJ3cyIsICJwYXRoIjogIi92bWVzcyIsICJwb3J0IjogNDQzLCAicHMiOiAiKGdyYXRpc2FuKSBbVk1lc3MgLSB3c10gVExTIFx1MjcwNSIsICJzY3kiOiAiYXV0byIsICJzbmkiOiAiZGV3YS5yZW5haXNhbmQubXkuaWQiLCAidGxzIjogInRscyIsICJ0eXBlIjogIiIsICJ2IjogIjIifQ==",
-            "vless://4b6e757d-841d-464b-a82a-cb5525264715@dewa.renaisand.my.id:443?security=tls&type=ws&headerType=&path=%2Fvless&host=dewa.renaisand.my.id&sni=dewa.renaisand.my.id&fp=ios#(gratisan)%20%5BVLESS%20-%20ws%5D%20TLS%20%E2%9C%85"
-        ];
+    <audio id="bgMusic" src="YTDown.com_YouTube_Good-For-You-x-One-Of-The-Girls-Slowed_Media_1Nj_Uc_0PI_009_128k.mp3" preload="auto" loop></audio>
 
-        function pad(n) { return String(n).padStart(2, '0'); }
-
-        function tick() {
-            const now = new Date();
-            document.getElementById('clock').textContent = pad(now.getHours()) + ':' + pad(now.getMinutes());
-            document.getElementById('lockDate').textContent = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
-        }
-
-        function copyCfg(i, btn) {
-            navigator.clipboard.writeText(C[i]).then(function () {
-                btn.classList.add('copied');
-                btn.textContent = '✓ Tersalin!';
-                setTimeout(function () {
-                    btn.classList.remove('copied');
-                    btn.textContent = '📋 Copy Config';
-                }, 2000);
-            });
-        }
-
-        tick();
-        setInterval(tick, 1000);
-    </script>
+    <script src="index.js" defer></script>
 </body>
 </html>
